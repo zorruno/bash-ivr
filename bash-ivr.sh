@@ -24,6 +24,8 @@
 #             - fix broken stuff...
 #  2016-03-13 - KMW
 #             - tidy and put into git
+#  2016-03-29 - KMW
+#             - add command-line option parsing.
 
 #==========================================================================
 # CONFIG
@@ -33,11 +35,11 @@
 MENU="${0%/*}/examples/menu"
 SOUNDS="${0%/*}/sounds"
 
-# Define the wav player program - can specify full path and commandline 
+# Define the wav player program - can specify full path and commandline
 # options if desired.
 PLAYWAV="play"
 
-# Define the TextToSpeech program - can specify full path and commandline 
+# Define the TextToSpeech program - can specify full path and commandline
 # options if desired.
 TTS="flite -t"
 
@@ -90,7 +92,7 @@ CheckSetup() {
       Error "CheckSetup: one or more digit wav files not found in '$SOUNDS'"
       exit 1
    }
-   
+
    # this is potentially deliberate, possibly.  Not necessarily fatal?
    [ -r "$SOUNDS/menuheader.wav" ] \
       || Warning "CheckSetup: menuheader.wav not found in '$SOUNDS'"
@@ -219,7 +221,35 @@ RunTarget() {
    fi
 }
 
-#==========================================================================
+#--------------------------------------------------------------------------
+ParseCommandline() {
+   # getopts might have been used in the shell, so reset this to be safe?
+   OPTIND=1
+
+   while getopts "h?m:" opt; do
+
+      case "$opt" in
+         m) MENU=$OPTARG
+            ;;
+         *)
+            echo "${0##*/}: Help should be here..."
+            exit 0
+            ;;
+      esac
+   done
+
+   shift $((OPTIND-1))
+
+   # get rid of the "end of options" separator, if any
+   [ "$1" = "--" ] && shift
+
+   [ "$1" ] && {
+      echo "ERROR: Unused commandline options: $@"
+      exit 1
+   }
+}
+
+#--------------------------------------------------------------------------
 ## Function to read a single keypress from the user.
 #
 ReadKey() {
@@ -231,8 +261,10 @@ ReadKey() {
     echo "$ONECHAR"
 }
 
+#--------------------------------------------------------------------------
 #==========================================================================
 
+ParseCommandline "$@"
 CheckSetup
 QUIT=""
 while [ ! "$QUIT" ]; do
