@@ -35,13 +35,18 @@
 MENU="${0%/*}/examples/menu"
 SOUNDS="${0%/*}/sounds"
 
-# Define the wav player program - can specify full path and commandline
+# Define the sound player program - can specify full path and commandline
 # options if desired.
-PLAYWAV="play"
+PLAYAUDIO="play"
 
 # Define the TextToSpeech program - can specify full path and commandline
 # options if desired.
 TTS="flite -t"
+
+# Define the extension for digit sound files (no dot) - eg. "wav" or "mp3"
+# The audio player needs to be able to play this format!
+DIGIT_EXT="wav"
+DIGIT_EXT="mp3"
 
 # CODE stores the current position in the menu structure.
 # eg. "31" if we have chosen the 3rd top-level menu and the 1st item under
@@ -88,14 +93,14 @@ CheckSetup() {
       Error "CheckSetup: MENU dir not found '$MENU'"
       exit 1
    }
-   [ -r "$SOUNDS/1.wav" ] || {
-      Error "CheckSetup: one or more digit wav files not found in '$SOUNDS'"
+   [ -r "$SOUNDS/1.${DIGIT_EXT}" ] || {
+      Error "CheckSetup: one or more digit sound files not found in '$SOUNDS'"
       exit 1
    }
 
    # this is potentially deliberate, possibly.  Not necessarily fatal?
-   [ -r "$SOUNDS/menuheader.wav" ] \
-      || Warning "CheckSetup: menuheader.wav not found in '$SOUNDS'"
+   [ -r "$SOUNDS/menuheader.${DIGIT_EXT}" ] \
+      || Warning "CheckSetup: menuheader sound file not found in '$SOUNDS'"
 }
 
 #--------------------------------------------------------------------------
@@ -107,7 +112,7 @@ PlaySound() {
       Error "PlaySound: trying to play unreadable file!  '$SOUNDFILE'"
    else
       Info "PlaySound: playing '$SOUNDFILE'"
-      $PLAYWAV "$SOUNDFILE"
+      $PLAYAUDIO "$SOUNDFILE"
    fi
 }
 
@@ -148,20 +153,20 @@ SpeakTarget() {
          read -t 0.1 -n 1 -s KEYPRESS
          KEYQUEUE=$KEYQUEUE$KEYPRESS
          if [ ! "$KEYQUEUE" ]; then
-            PlaySound "$SOUNDS/menuheader.wav"
+            PlaySound "$SOUNDS/menuheader.${DIGIT_EXT}"
          else
             Debug "SpeakTarget MenuHeader early exit: CODE='$CODE' DIGIT='$DIGIT' KEYQUEUE='$KEYQUEUE'"
          fi
          ;;
       1|2|3|4|5|6|7|8|9)
-         local KEYAUDIO="${DIGIT}.wav"
+         local KEYAUDIO="$SOUNDS/${DIGIT}.${DIGIT_EXT}"
          local RGX="^${CODE}${DIGIT}_[^.]+\.wav$"
          local AUDIO="$(ls "$MENU" | grep -Em1 "$RGX")"
 
          read -t 0.1 -n 1 -s KEYPRESS
          KEYQUEUE=$KEYQUEUE$KEYPRESS
          if [ ! "$KEYQUEUE" ]; then
-            PlaySound "$SOUNDS/$DIGIT.wav"
+            PlaySound "$KEYAUDIO"
             if [ "$AUDIO" ]; then
                #echo "SpeakTarget: playing '$KEYAUDIO' then audio file '$AUDIO'"
                PlaySound "$MENU/$AUDIO"
@@ -226,14 +231,27 @@ ParseCommandline() {
    # getopts might have been used in the shell, so reset this to be safe?
    OPTIND=1
 
-   while getopts "h?m:" opt; do
+   while getopts "h?e:m:s:" opt; do
 
       case "$opt" in
+         e) DIGIT_EXT=$OPTARG
+            ;;
          m) MENU=$OPTARG
             ;;
+         s) SOUNDS=$OPTARG
+            ;;
          *)
-            echo "${0##*/}: Help should be here..."
-            exit 0
+            echo
+            echo "Usage: ${0##*/} [-e DIGIT_EXT] [-m MENU_DIR] [-s SOUND_DIR]"
+            echo "   Note: all options should have sane defaults if left unset."
+            echo "   -e DIGIT_EXT"
+            echo "      Specify the extension for sound files, eg. 'wav' or 'mp3'"
+            echo "   -m MENU_DIR"
+            echo "      Specify the directory holding the menu structure/script files."
+            echo "   -s SOUND_DIR"
+            echo "      Specify the directory holding the digit/menuheader sound files."
+            echo
+            exit 1
             ;;
       esac
    done

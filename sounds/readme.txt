@@ -1,26 +1,30 @@
-This directory should contain a set of wav files to be used by the IVR system.
-I have not supplied a set because I've not yet documented the licence for
-the wav files I am using.
+This directory should contain a set of sound files to be used by the IVR system.
+They need to be in a format for which you have a player - eg. wav, mp3.
+You need to specify the format in the script, or in commandline options.
 
-Digit wav files corresponding to spoken digits, "0", "1", "2", etc.
-Pre-recorded versions of these can be found all over the internet, often
+Supplied are a free set I made myself - don't expect high quality!
+Better quality versions of these can be found all over the internet, often
 in sets intended for asterisk IVR systems 
 - eg. http://www.voip-info.org/wiki/view/Asterisk+sound+files 
 
-The menuheader wav file is played at the start of each set of menu 
+Digit sound files correspond to spoken digits, "0", "1", "2", etc.
+The menuheader sound file is played at the start of each set of menu 
 announcements - eg. "menuheader" "1" "shutdown" "2" "reboot" "3" "exit".
 
-This is the current full listing of wav files required: 
+This is the current full listing of sound files required:
+(They could be mp3 or wav, or something else)
 ---------------------------------------------------------------------------
-0.wav
-1.wav
-2.wav
-3.wav
-4.wav
-5.wav
-6.wav
-7.wav
-8.wav
-9.wav
-menuheader.wav
+0.mp3
+1.mp3
+2.mp3
+3.mp3
+4.mp3
+5.mp3
+6.mp3
+7.mp3
+8.mp3
+9.mp3
+menuheader.mp3
 ---------------------------------------------------------------------------
+
+Note: digit 0 is not actually used, at the moment...
