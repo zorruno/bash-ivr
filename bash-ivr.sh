@@ -48,7 +48,7 @@ TTS="flite -t"
 # Define the extension for digit sound files (no dot) - eg. "wav" or "mp3"
 # The audio player needs to be able to play this format!
 DIGIT_EXT="wav"
-DIGIT_EXT="mp3"
+#DIGIT_EXT="mp3"
 
 # CODE stores the current position in the menu structure.
 # eg. "31" if we have chosen the 3rd top-level menu and the 1st item under
