@@ -26,6 +26,8 @@
 #             - tidy and put into git
 #  2016-03-29 - KMW
 #             - add command-line option parsing.
+#  2016-12-14 - KMW
+#             - add quiet start command-line option.
 
 #==========================================================================
 # CONFIG
@@ -63,6 +65,9 @@ KEYQUEUE=""
 #  2 = info
 DEBUG_LEVEL=2
 
+# If it is desired to not announce options at first start, set KEYQUEUE
+# to this value, and initial menu speech will be suppressed.
+KEYQUEUE_QUIET_START="__QUIET_START__"
 
 #==========================================================================
 # FUNCTIONS
@@ -231,23 +236,27 @@ ParseCommandline() {
    # getopts might have been used in the shell, so reset this to be safe?
    OPTIND=1
 
-   while getopts "h?e:m:s:" opt; do
+   while getopts "h?qe:m:s:" opt; do
 
       case "$opt" in
          e) DIGIT_EXT=$OPTARG
             ;;
          m) MENU=$OPTARG
             ;;
+         q) KEYQUEUE="$KEYQUEUE_QUIET_START"
+            ;;
          s) SOUNDS=$OPTARG
             ;;
          *)
             echo
-            echo "Usage: ${0##*/} [-e DIGIT_EXT] [-m MENU_DIR] [-s SOUND_DIR]"
+            echo "Usage: ${0##*/} [-q] [-e DIGIT_EXT] [-m MENU_DIR] [-s SOUND_DIR]"
             echo "   Note: all options should have sane defaults if left unset."
             echo "   -e DIGIT_EXT"
             echo "      Specify the extension for sound files, eg. 'wav' or 'mp3'"
             echo "   -m MENU_DIR"
             echo "      Specify the directory holding the menu structure/script files."
+            echo "   -q"
+            echo "      Quiet start - do not announce base menu at start-up."
             echo "   -s SOUND_DIR"
             echo "      Specify the directory holding the digit/menuheader sound files."
             echo
@@ -287,9 +296,13 @@ CheckSetup
 QUIT=""
 while [ ! "$QUIT" ]; do
 
-   [ "$KEYQUEUE" ] || {
+   # Announce the menu options, but not if we are doing a quiet start
+   if [ "$KEYQUEUE" = "$KEYQUEUE_QUIET_START" ]; then
+      KEYQUEUE=""
+      Debug "Main: Quiet start"
+   elif [ -z "$KEYQUEUE" ]; then
       SpeakTargets $CODE
-   }
+   fi
 
    # get the first key in the buffer
    KEY="${KEYQUEUE:0:1}"
