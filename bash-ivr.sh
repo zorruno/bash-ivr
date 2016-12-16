@@ -30,7 +30,7 @@
 #             - add quiet start command-line option.
 #  2016-12-16 - ZORRUNO
 #             - Build on quiet start option to add more menu announce audio options	
-#	      - Nil functionality change yet
+#	           - Nil functionality change yet
 
 
 #==========================================================================
@@ -313,7 +313,7 @@ while [ ! "$QUIT" ]; do
    # Announce the menu options, but not if we are doing a quiet start
    if [ "$AUDIO_ANNOUNCE_OPTION" != 0 ]; then
       #KEYQUEUE=""
-      $AUDIO_ANNOUNCE_OPTION=0
+      AUDIO_ANNOUNCE_OPTION=0
       Debug "Main: Quiet start"
    # ZORRUNO: do we need to check for null string now?
    elif [ -z "$KEYQUEUE" ]; then
