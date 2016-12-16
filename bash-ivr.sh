@@ -248,7 +248,7 @@ ParseCommandline() {
    # getopts might have been used in the shell, so reset this to be safe?
    OPTIND=1
 
-   while getopts "h?qe:m:s:" opt; do
+   while getopts "h?q:e:m:s:" opt; do
 
       case "$opt" in
          e) DIGIT_EXT=$OPTARG
