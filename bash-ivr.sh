@@ -311,7 +311,6 @@ QUIT=""
 while [ ! "$QUIT" ]; do
 
    # Announce the menu options, but not if we are doing a quiet start
-   if [ "$KEYQUEUE" = "$KEYQUEUE_QUIET_START" ]; then
    if [ "$AUDIO_ANNOUNCE_OPTION" != 0 ]; then
       #KEYQUEUE=""
 	  $AUDIO_ANNOUNCE_OPTION = 0
