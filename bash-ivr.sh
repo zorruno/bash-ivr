@@ -28,6 +28,10 @@
 #             - add command-line option parsing.
 #  2016-12-14 - KMW
 #             - add quiet start command-line option.
+#  2016-12-16 - ZORRUNO
+#             - Build on quiet start option to add more menu announce audio options	
+#			  - Nil functionality change yet
+
 
 #==========================================================================
 # CONFIG
@@ -65,9 +69,17 @@ KEYQUEUE=""
 #  2 = info
 DEBUG_LEVEL=2
 
+# ZORRUNO 2016-12-16 removing this quiet start to replace it with more audio options
+#
 # If it is desired to not announce options at first start, set KEYQUEUE
 # to this value, and initial menu speech will be suppressed.
-KEYQUEUE_QUIET_START="__QUIET_START__"
+# KEYQUEUE_QUIET_START="__QUIET_START__"
+
+# ZORRUNO 2016-12-16 adding this to do other audio options
+#  0 = Always announce all menu options
+#  1 = Quiet start (announce menus, but not on first startup)
+#  2 = Other menu announcing tbd
+AUDIO_ANNOUNCE_OPTION=1
 
 #==========================================================================
 # FUNCTIONS
@@ -243,20 +255,22 @@ ParseCommandline() {
             ;;
          m) MENU=$OPTARG
             ;;
-         q) KEYQUEUE="$KEYQUEUE_QUIET_START"
+         q) AUDIO_ANNOUNCE_OPTION=$OPTARG
             ;;
          s) SOUNDS=$OPTARG
             ;;
          *)
             echo
-            echo "Usage: ${0##*/} [-q] [-e DIGIT_EXT] [-m MENU_DIR] [-s SOUND_DIR]"
+            echo "Usage: ${0##*/} [-q n] [-e DIGIT_EXT] [-m MENU_DIR] [-s SOUND_DIR]"
             echo "   Note: all options should have sane defaults if left unset."
             echo "   -e DIGIT_EXT"
             echo "      Specify the extension for sound files, eg. 'wav' or 'mp3'"
             echo "   -m MENU_DIR"
             echo "      Specify the directory holding the menu structure/script files."
-            echo "   -q"
-            echo "      Quiet start - do not announce base menu at start-up."
+            echo "   -q n"
+            echo "      0: All audio menu announcing."
+            echo "      1: Quiet start - do not announce base menu at start-up."
+            echo "      2: Other menu announce... tbd."
             echo "   -s SOUND_DIR"
             echo "      Specify the directory holding the digit/menuheader sound files."
             echo
@@ -298,8 +312,11 @@ while [ ! "$QUIT" ]; do
 
    # Announce the menu options, but not if we are doing a quiet start
    if [ "$KEYQUEUE" = "$KEYQUEUE_QUIET_START" ]; then
-      KEYQUEUE=""
+   if [ "$AUDIO_ANNOUNCE_OPTION" != 0 ]; then
+      #KEYQUEUE=""
+	  $AUDIO_ANNOUNCE_OPTION = 0
       Debug "Main: Quiet start"
+   # ZORRUNO: do we need to check for null string now?
    elif [ -z "$KEYQUEUE" ]; then
       SpeakTargets $CODE
    fi
